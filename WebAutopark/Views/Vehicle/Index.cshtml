@@ -1,0 +1,242 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Vehicle";
+}
+@using WebAutopark.Models
+@model List<Vehicle>
+
+<h1>Vehicle List</h1>
+
+
+<div class="row">
+    <div class="col-md-6 col-lg-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @nameof(Vehicle.VehicleId)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.VehicleTypeId)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.Model)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.RegistrationNumber)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.Weight)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.Year)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.Mileage)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.Color)
+                    </th>
+                    <th>
+                        @nameof(Vehicle.FuelConsumption)
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>    
+                @foreach (var vehicle in Model)
+                {
+                    <tr onclick="addVehicleButtons(this, @vehicle.VehicleId, @vehicle.VehicleTypeId, '@vehicle.Model', '@vehicle.RegistrationNumber', @vehicle.Weight, @vehicle.Year, @vehicle.Mileage, '@vehicle.Color', '@vehicle.FuelConsumption' )"
+                        data-id='@vehicle.VehicleId'>
+                        <td>@vehicle.VehicleId</td>
+                        <td>@vehicle.VehicleTypeId</td>
+                        <td>@vehicle.Model</td>
+                        <td>@vehicle.RegistrationNumber</td>
+                        <td>@vehicle.Weight</td>
+                        <td>@vehicle.Year</td>
+                        <td>@vehicle.Mileage</td>
+                        <td>@vehicle.Color</td>
+                        <td>@vehicle.FuelConsumption</td>
+                        <td></td>
+                    </tr>
+                }               
+            </tbody>
+        </table>
+    </div>
+</div>
+<br/>
+
+<!-- Button to Open the Modal -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#vehicleModal">
+    Add New Vehicle
+</button>
+
+<!-- Bootstrap Modal Form -->
+<div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="vehicleModalLabel">Add New Vehicle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="vehicleForm">
+                    <div class="mb-1">
+                        <label for="VehicleId" class="form-label">VehicleId</label>
+                        <input type="text" class="form-control" id="VehicleId" name="VehicleId" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="VehicleTypeId" class="form-label">VehicleTypeId</label>
+                        <input type="text" class="form-control" id="VehicleTypeId" name="VehicleTypeId" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Model" class="form-label">Model</label>
+                        <input type="text" class="form-control" id="Model" name="Model" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="RegistrationNumber" class="form-label">RegistrationNumber</label>
+                        <input type="text" class="form-control" id="RegistrationNumber" name="RegistrationNumber" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Weight" class="form-label">Weight</label>
+                        <input type="number" class="form-control" id="Weight" name="Weight" required>
+                    </div>                    
+                    <div class="mb-1">
+                        <label for="Year" class="form-label">Year</label>
+                        <input type="number" class="form-control" id="Year" name="Year" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Mileage" class="form-label">Mileage</label>
+                        <input type="number" class="form-control" id="Mileage" name="Mileage" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Color" class="form-label">Color</label>
+                        <input type="text" class="form-control" id="Color" name="Color" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="FuelConsumption" class="form-label">FuelConsumption</label>
+                        <div class="form-floating">
+                            <input type="number" step="any" class="form-control" id="FuelConsumption" name="FuelConsumption" required>
+                        </div>                        
+                    </div>
+                    <br/>
+                    <button type="submit" class="btn btn-success">Save Vehicle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Modal for Editing -->
+<div class="modal fade" id="editVehicleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Vehicle Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editVehicleId">
+
+                <div class="mb-3">
+                    <label for="editVehicleId" class="form-label">Vehicle Type Id:</label>
+                    <input type="text" id="editVehicleTypeId" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editModel" class="form-label">Model:</label>
+                    <input type="text" id="editModel" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editRegistrationNumber" class="form-label">Registration Number:</label>
+                    <input type="text" id="editRegistrationNumber" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editWeight" class="form-label">Weight:</label>
+                    <input type="number" id="editWeight" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editYear" class="form-label">Year:</label>
+                    <input type="number" id="editYear" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editMileage" class="form-label">Mileage:</label>
+                    <input type="number" id="editMileage" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editColor" class="form-label">Color:</label>
+                    <input type="text" id="editColor" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editFuelConsumption" class="form-label">Fuel Consumption:</label>
+                    <input type="text" id="editFuelConsumption" class="form-control">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="saveVehicleEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const vehicleForm = document.getElementById("vehicleForm");
+
+        vehicleForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let vehicleData = {
+                VehicleId: parseInt(vehicleForm.VehicleId.value.trim()),
+                VehicleTypeId: parseInt(vehicleForm.VehicleTypeId.value.trim()),
+                RegistrationNumber: vehicleForm.RegistrationNumber.value.trim(),
+                Weight: parseInt(vehicleForm.Weight.value) || 0,
+                Mileage: parseInt(vehicleForm.Mileage.value) || 0,
+                Color: vehicleForm.Color.value.trim(),
+                FuelConsumption: parseFloat(vehicleForm.FuelConsumption.value.trim()) || 0,  // Ensure correct float parsing
+                Model: vehicleForm.Model.value.trim(),
+                Year: parseInt(vehicleForm.Year.value) || new Date().getFullYear()  // Default to current year if empty
+            };
+
+            // Convert object to JSON string
+            let jsonData = JSON.stringify(vehicleData);
+
+            // Use Fetch API to send the HTTP request
+            fetch("/Vehicle/Create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: jsonData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error! Status: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Reload page after successful submission
+                } else {
+                    alert("Error adding vehicle: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("Request failed: " + error.message);
+            });
+        });
+    });
+</script>

@@ -1,0 +1,154 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Order";
+}
+@using WebAutopark.Models
+@model List<Orders>
+<h2>List of Current Orders</h2>
+
+<div class="row">
+    <div class="col-md-6 col-lg-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @nameof(Orders.OrderId)
+                    </th>
+                    <th>
+                        @nameof(Orders.VehicleId)
+                    </th>
+                    <th>
+                        @nameof(Orders.Date)
+                    </th>           
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr onclick="addOrderButtons(this, @order.OrderId, @order.VehicleId, '@order.Date')"
+                        data-id='@order.OrderId'>
+                        <td>@order.OrderId</td>
+                        <td>@order.VehicleId</td>
+                        <td>@order.Date</td>  
+                        <td></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Button to Open the Modal -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#orderModal">
+    Add New Order
+</button>
+
+<!-- Bootstrap Modal Form -->
+<div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderModalLabel">Add New Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <div class="mb-1">
+                        <label for="OrderId" class="form-label">OrderId</label>
+                        <input type="number" class="form-control" id="OrderId" name="OrderId" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="VehicleId" class="form-label">VehicleId</label>
+                        <input type="number" class="form-control" id="VehicleId" name="VehicleId" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="Date" name="Date" required>
+                    </div>
+                    <br />
+                    <button type="submit" class="btn btn-success">Save Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap Modal for Editing -->
+<div class="modal fade" id="editOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editOrderId">
+
+                <div class="mb-3">
+                    <label for="editVehicleId" class="form-label">Vehicle Id:</label>
+                    <input type="text" id="editVehicleId" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="editDate" class="form-label">Date:</label>
+                    <input type="date" id="editDate" class="form-control">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="saveOrderEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const orderForm = document.getElementById("orderForm");
+
+        orderForm.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let orderData = {
+                OrderId: parseInt(orderForm.OrderId.value.trim()),
+                VehicleId: parseInt(orderForm.VehicleId.value.trim()),
+                Date: orderForm.Date.value.trim(),
+            };
+
+            // Convert object to JSON string
+            let jsonData = JSON.stringify(orderData);
+
+            // Use Fetch API to send the HTTP request
+            fetch("/Order/Create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: jsonData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("HTTP error! Status: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Reload page after successful submission
+                } else {
+                    alert("Error adding vehicle: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("Request failed: " + error.message);
+            });
+        });
+    });
+</script>
